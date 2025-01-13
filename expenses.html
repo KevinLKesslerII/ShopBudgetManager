@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Expenses</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>All Expenses</h1>
+    <!-- Back to Dashboard Button -->
+    <div>
+        <button onclick="window.location='index.html'">Back to Dashboard</button>
+    </div>
+
+    <!-- Filter options for variable expenses -->
+    <label for="monthFilter">Filter by Month:</label>
+    <input type="month" id="monthFilter" onchange="filterExpenses()">
+    <button onclick="clearExpensesFilters()">Clear Filters</button>
+
+    <!-- Variable Expenses Table with Checkbox for Paid Status -->
+    <h2>Variable Expenses</h2>
+    <table id="expensesTable">
+        <thead>
+            <tr>
+                <th>Expense Name</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Paid</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Expense entries will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <!-- Fixed Expenses Table with Delete Option -->
+    <h2>Fixed Expenses</h2>
+    <table id="fixedExpensesTable">
+        <thead>
+            <tr>
+                <th>Expense Name</th>
+                <th>Amount</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Fixed expense entries will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <script src="script.js"></script>
+    <script>
+        function populateExpensesTable() {
+            const expensesTable = document.getElementById('expensesTable').getElementsByTagName('tbody')[0];
+            expensesTable.innerHTML = '';
+            const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+            expenses.forEach((expense, index) => {
+                let row = expensesTable.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+                let cell4 = row.insertCell(3);
+
+                cell1.textContent = expense.name;
+                cell2.textContent = `$${expense.amount.toFixed(2)}`;
+                cell3.textContent = new Date(expense.date).toLocaleDateString();
+
+                let paidCheckbox = document.createElement('input');
+                paidCheckbox.type = 'checkbox';
+                paidCheckbox.checked = expense.paid;
+                paidCheckbox.onchange = () => updateExpensePaidStatus(index, paidCheckbox.checked);
+                cell4.appendChild(paidCheckbox);
+            });
+        }
+
+        function populateFixedExpensesTable() {
+            const fixedExpensesTable = document.getElementById('fixedExpensesTable').getElementsByTagName('tbody')[0];
+            fixedExpensesTable.innerHTML = '';
+            const fixedExpenses = JSON.parse(localStorage.getItem('fixedExpenses')) || [];
+            fixedExpenses.forEach((expense, index) => {
+                let row = fixedExpensesTable.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+
+                cell1.textContent = expense.name;
+                cell2.textContent = `$${expense.amount.toFixed(2)}`;
+
+                let deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = () => editFixedExpense(index, null);
+                cell3.appendChild(deleteButton);
+            });
+        }
+
+        function filterExpenses() {
+            const filterValue = document.getElementById('monthFilter').value;
+            const year = filterValue.substring(0, 4);
+            const month = filterValue.substring(5, 7) - 1;
+            const expensesTable = document.getElementById('expensesTable').getElementsByTagName('tbody')[0];
+            expensesTable.innerHTML = ''; // Clear table
+            const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+            expenses.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                return expenseDate.getFullYear() === parseInt(year) && expenseDate.getMonth() === parseInt(month);
+            }).forEach((expense, index) => {
+                let row = expensesTable.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+                let cell4 = row.insertCell(3);
+                let cell5 = row.insertCell(4);
+                let cell6 = row.insertCell(5);
+
+                cell1.textContent = expense.name;
+                cell2.textContent = `$${expense.amount.toFixed(2)}`;
+                cell3.textContent = new Date(expense.date).toLocaleDateString();
+
+                let paidCheckbox = document.createElement('input');
+                paidCheckbox.type = 'checkbox';
+                paidCheckbox.checked = expense.paid;
+                paidCheckbox.onchange = () => updateExpensePaidStatus(index, paidCheckbox.checked);
+                cell4.appendChild(paidCheckbox);
+
+            });
+        }
+
+        function clearExpensesFilters() {
+            document.getElementById('monthFilter').value = '';
+            populateExpensesTable();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateExpensesTable();
+            populateFixedExpensesTable();
+        });
+
+    </script>
+</body>
+
+</html>

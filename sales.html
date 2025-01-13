@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Sales</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>All Sales</h1>
+    <!-- Back to Dashboard Button -->
+    <button onclick="window.location='index.html'">Back to Dashboard</button>
+    <!-- Filter options -->
+    <label for="monthFilter">Filter by Month:</label>
+    <input type="month" id="monthFilter" onchange="filterSales()">
+    <button onclick="clearSalesFilters()">Clear Filters</button>
+
+
+
+    <table id="salesTable">
+        <thead>
+            <tr>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Sales entries will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <script src="script.js"></script>
+    <script>
+        function populateSalesTable() {
+            const salesTable = document.getElementById('salesTable').getElementsByTagName('tbody')[0];
+            salesTable.innerHTML = ''; // Clear existing entries
+            const sales = JSON.parse(localStorage.getItem('sales')) || [];
+            sales.forEach(sale => {
+                let row = salesTable.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                cell1.textContent = `$${sale.amount.toFixed(2)}`;
+                cell2.textContent = new Date(sale.date).toLocaleDateString();
+            });
+        }
+
+        function filterSales() {
+            const filterValue = document.getElementById('monthFilter').value;
+            const year = filterValue.substring(0, 4);
+            const month = filterValue.substring(5, 7) - 1;
+            const salesTable = document.getElementById('salesTable').getElementsByTagName('tbody')[0];
+            salesTable.innerHTML = ''; // Clear table
+            const sales = JSON.parse(localStorage.getItem('sales')) || [];
+            sales.filter(sale => {
+                const saleDate = new Date(sale.date);
+                return saleDate.getFullYear() === parseInt(year) && saleDate.getMonth() === parseInt(month);
+            }).forEach(sale => {
+                let row = salesTable.insertRow();
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                cell1.textContent = `$${sale.amount.toFixed(2)}`;
+                cell2.textContent = new Date(sale.date).toLocaleDateString();
+            });
+        }
+
+        function clearSalesFilters() {
+            document.getElementById('monthFilter').value = '';
+            populateSalesTable();
+        }
+
+        document.addEventListener('DOMContentLoaded', populateSalesTable);
+
+    </script>
+</body>
+
+</html>
