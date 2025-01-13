@@ -69,7 +69,7 @@ function updateDashboard() {
     if (netIncome < 0) {
         netIncomeElement.style.color = 'red';
     } else {
-        netIncomeElement.style.color = 'black'; // Or any default color
+        netIncomeElement.style.color = 'black';
     }
 
     updateMonthlyAndYTD();
@@ -110,7 +110,7 @@ function updateExpensePaidStatus(index, isPaid) {
     if (expenses[index]) {
         expenses[index].paid = isPaid; // Update the 'paid' status
         localStorage.setItem('expenses', JSON.stringify(expenses));
-        updateDashboard(); // Optionally update dashboard if needed
+        updateDashboard();
     }
 }
 
